@@ -1,7 +1,7 @@
 # MinimalAPI.Pokedex
 This project is a showcase for the new .NET 6 Minimal APIs feature for developing Web APIs.
 
-![](![](https://countrush-prod.azurewebsites.net/l/badge/?repository=kasuken.MinimalAPI.Pokedex)
+![](https://countrush-prod.azurewebsites.net/l/badge/?repository=kasuken.MinimalAPI.Pokedex)
 
 # Description
 
