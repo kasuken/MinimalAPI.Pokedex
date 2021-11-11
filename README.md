@@ -30,7 +30,7 @@ Feedbacks are welcome.
     ```
 - CORS
     ```csharp
-        builder.Services.AddCors(options => options.AddPolicy("AnyOrigin", o => o.AllowAnyOrigin()));
+    builder.Services.AddCors(options => options.AddPolicy("AnyOrigin", o => o.AllowAnyOrigin()));
     ```
 
 - services to service collection.
