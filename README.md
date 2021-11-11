@@ -15,18 +15,18 @@ Feedbacks are welcome.
 
 - In program.cs, API explorer and Swagger.
     ```csharp
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo()
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Description = "Pokedex API with .NET 6 Minimal API",
+        Title = "Pokedex API",
+        Version = "v1",
+        Contact = new OpenApiContact()
         {
-            Description = "Pokedex API with .NET 6 Minimal API",
-            Title = "Pokedex API",
-            Version = "v1",
-            Contact = new OpenApiContact()
-            {
-                Name = "Emanuele Bartolesi",
-                Url = new Uri("https://github.com/kasuken")
-            }
-        }));
+            Name = "Emanuele Bartolesi",
+            Url = new Uri("https://github.com/kasuken")
+        }
+    }));
     ```
 - CORS
     ```csharp
@@ -35,64 +35,63 @@ Feedbacks are welcome.
 
 - services to service collection.
     ```csharp
-        public static IServiceCollection AddPokedexServices(this IServiceCollection services)
-        {
-            services.AddScoped<IPokedexRepository, PokedexRepository>();
-            services.AddScoped<IPokedexService, PokedexService>();
-            return services;
-        }
+    public static IServiceCollection AddPokedexServices(this IServiceCollection services)
+    {
+        services.AddScoped<IPokedexRepository, PokedexRepository>();
+        services.AddScoped<IPokedexService, PokedexService>();
+        return services;
+    }
     ```
 - Routes in a separate class with some costants for path
     ```csharp
-        private static void MapSearch(IEndpointRouteBuilder builder)
+    private static void MapSearch(IEndpointRouteBuilder builder)
+    {
+        builder.MapGet(RouteConstants.Search, async (string query, int? page, int? pageSize, IPokedexService service) =>
         {
-            builder.MapGet(RouteConstants.Search, async (string query, int? page, int? pageSize, IPokedexService service) =>
+            if (string.IsNullOrWhiteSpace(query))
             {
-                if (string.IsNullOrWhiteSpace(query))
-                {
-                    return Results.BadRequest();
-                }
-                return Results.Ok(await service.SearchAsync(query, page ?? 1, pageSize ?? 20));
-            })
-            .Produces<PokedexPagedResponse>(StatusCodes.Status200OK)
-            .Produces<PokedexPagedResponse>(StatusCodes.Status400BadRequest)
-            .RequireCors("AnyOrigin");
-        }
+                return Results.BadRequest();
+            }
+            return Results.Ok(await service.SearchAsync(query, page ?? 1, pageSize ?? 20));
+        })
+        .Produces<PokedexPagedResponse>(StatusCodes.Status200OK)
+        .Produces<PokedexPagedResponse>(StatusCodes.Status400BadRequest)
+        .RequireCors("AnyOrigin");
+    }
 
-        private static void MapAll(IEndpointRouteBuilder builder)
+    private static void MapAll(IEndpointRouteBuilder builder)
+    {
+        builder.MapGet(RouteConstants.All, async (IPokedexService service) =>
         {
-            builder.MapGet(RouteConstants.All, async (IPokedexService service) =>
-            {
-                return await service.GetAllAsync();
-            })
-            .Produces<PokedexResponse>(StatusCodes.Status200OK)
-            .RequireCors("AnyOrigin");
-        }
+            return await service.GetAllAsync();
+        })
+        .Produces<PokedexResponse>(StatusCodes.Status200OK)
+        .RequireCors("AnyOrigin");
+    }
 
-        private static void MapSinglePokemon(IEndpointRouteBuilder builder)
+    private static void MapSinglePokemon(IEndpointRouteBuilder builder)
+    {
+        builder.MapGet(RouteConstants.SinglePokemon, async (string name, IPokedexService service) =>
         {
-            builder.MapGet(RouteConstants.SinglePokemon, async (string name, IPokedexService service) =>
+            var pokemon = await service.GetAsync(name);
+            if (pokemon == null)
             {
-                var pokemon = await service.GetAsync(name);
-                if (pokemon == null)
-                {
-                    return Results.NotFound();
-                }
-                return Results.Ok(pokemon);
-            })
-            .Produces<PokemonEntity>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireCors("AnyOrigin");
-        }
+                return Results.NotFound();
+            }
+            return Results.Ok(pokemon);
+        })
+        .Produces<PokemonEntity>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .RequireCors("AnyOrigin");
+    }
 
-        private static void MapPagedList(IEndpointRouteBuilder builder)
+    private static void MapPagedList(IEndpointRouteBuilder builder)
+    {
+        builder.MapGet(RouteConstants.PagedList, async (int? page, int? pageSize, IPokedexService service) =>
         {
-            builder.MapGet(RouteConstants.PagedList, async (int? page, int? pageSize, IPokedexService service) =>
-            {
-                return await service.GetAsync(page ?? 1, pageSize ?? 20);
-            })
-            .Produces<PokedexPagedResponse>(StatusCodes.Status200OK)
-            .RequireCors("AnyOrigin");
-        }
-
+            return await service.GetAsync(page ?? 1, pageSize ?? 20);
+        })
+        .Produces<PokedexPagedResponse>(StatusCodes.Status200OK)
+        .RequireCors("AnyOrigin");
+    }
     ```    
