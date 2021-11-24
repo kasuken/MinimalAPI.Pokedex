@@ -9,6 +9,9 @@ The project uses a static pokedex JSON file as a data store. The JSON file is ke
 
 Feedbacks are welcome.
 
+# Demo
+http://minimalapi-pokedex.azurewebsites.net/
+
 # Requirements
 - .NET 6
 - Visual Studio 2022 or Visual Studio Code
