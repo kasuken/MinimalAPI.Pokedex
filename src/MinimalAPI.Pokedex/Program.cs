@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiIn
 }));
 builder.Services.AddCors(options => options.AddPolicy("AnyOrigin", o => o.AllowAnyOrigin()));
 builder.Services.AddPokedexServices();
+
 var app = builder.Build();
 
 app.UseCors();
